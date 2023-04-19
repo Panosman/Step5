@@ -4,6 +4,7 @@ resource "azurerm_resource_group" "main" {
   location = var.location
 }
 
+#Create virtual network
 resource "azurerm_virtual_network" "main" {
   name                = "${var.prefix}-appserver-network"
   location            = azurerm_resource_group.main.location
