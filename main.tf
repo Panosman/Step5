@@ -20,6 +20,7 @@ resource "azurerm_subnet" "main" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
+#Create public ip
 resource "azurerm_public_ip" "main" {
   name                = "${var.prefix}-appserver-PublicIp"
   resource_group_name = azurerm_resource_group.main.name
