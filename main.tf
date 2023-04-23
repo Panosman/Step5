@@ -58,7 +58,7 @@ resource "azurerm_network_security_group" "main" {
     destination_address_prefix = "*"
   }
 
-  security_rule {
+/*   security_rule {
     name                       = "MySQL"
     priority                   = 102
     direction                  = "Inbound"
@@ -68,7 +68,7 @@ resource "azurerm_network_security_group" "main" {
     destination_port_range     = "3306"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
-  }
+  } */
 }
 
 resource "azurerm_network_interface" "main" {
@@ -82,6 +82,11 @@ resource "azurerm_network_interface" "main" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.main.id
   }
+}
+
+resource "azurerm_network_interface_security_group_association" "main" {
+  network_interface_id      = azurerm_network_interface.main.id
+  network_security_group_id = azurerm_network_security_group.main.id
 }
 
 resource "azurerm_virtual_machine" "main" {
