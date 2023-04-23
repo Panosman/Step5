@@ -48,7 +48,7 @@ resource "azurerm_network_security_group" "main" {
 
   security_rule {
     name                       = "JavaApp"
-    priority                   = 101
+    priority                   = 110
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -57,18 +57,6 @@ resource "azurerm_network_security_group" "main" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
-
-/*   security_rule {
-    name                       = "MySQL"
-    priority                   = 102
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "3306"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  } */
 }
 
 resource "azurerm_network_interface" "main" {
