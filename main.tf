@@ -77,12 +77,6 @@ resource "azurerm_network_interface_security_group_association" "main" {
   network_security_group_id = azurerm_network_security_group.main.id
 }
 
-# Create (and display) an SSH key
-resource "tls_private_key" "appserver_ssh" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
 resource "azurerm_linux_virtual_machine" "main" {
   name                  = "${var.prefix}-appserver-vm"
   location              = azurerm_resource_group.main.location
@@ -103,11 +97,8 @@ resource "azurerm_linux_virtual_machine" "main" {
     storage_account_type = "Standard_LRS"
   }
   computer_name  = "appserver"
-  admin_username = "webapp"
-  disable_password_authentication = true
+  admin_username = var.admin_username
+  admin_password = var.admin_password
+  disable_password_authentication = false
   
-  admin_ssh_key {
-    username   = "webapp"
-    public_key = tls_private_key.appserver_ssh.public_key_openssh
-  }
 }
