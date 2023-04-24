@@ -1,0 +1,95 @@
+#Setup the vm with the required software
+
+- name: Install Docker on the target node
+  become: true
+  hosts: appserver
+  vars:
+    ansible_ssh_user: panman
+    ansible_ssh_pass: Password1234
+
+  
+  tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+      become: true
+
+ 
+
+    - name: Install Docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg2
+          - software-properties-common
+      become: true
+
+ 
+
+    - name: Add Docker's GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+      become: true
+
+ 
+
+    - name: Add Docker APT repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+      become: true
+
+
+    - name: Install Docker CE
+      apt:
+        name: docker-ce
+        state: present
+      become: true
+
+    - name: Create Docker network
+      ansible.builtin.docker_network:
+        name: app_network
+        state: present
+
+    - name: Pull mysql Docker image
+      community.docker.docker_image:
+        name: "mysql:5.7"
+        source: pull
+
+    - name: Start mySql container
+      ansible.builtin.docker_container:
+        name: "mysqlcontainer"
+        image: "mysql:5.7"         
+        state: started         
+        env:
+          MYSQL_ROOT_PASSWORD: "root"         
+          ports: "3306:3306"
+        networks:
+          - name: app_network
+
+    - name: Wait for MySQL to start
+      ansible.builtin.pause:
+        seconds: 30
+
+    - name: Pull Webapp Docker image
+      community.docker.docker_image:
+        name: "panosman/codehub_project:latest"
+        source: pull
+
+    - name: Start WebApp container
+      ansible.builtin.docker_container:
+        name: "webappcontainer"
+        image: "panosman/codehub_project:latest"        
+        state: started
+        ports: "8080:8080"
+        env:
+          DB_HOST: "mysqlcontainer"
+          DB_PORT: "3306"
+          DB_USER: "root"           
+          DB_USER_PASSWORD: "root"
+          ports: "8080:8080"
+        networks:
+          - name: app_network

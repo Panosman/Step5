@@ -77,35 +77,37 @@ resource "azurerm_network_interface_security_group_association" "main" {
   network_security_group_id = azurerm_network_security_group.main.id
 }
 
-resource "azurerm_virtual_machine" "main" {
+# Create (and display) an SSH key
+resource "tls_private_key" "appserver_ssh" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "azurerm_linux_virtual_machine" "main" {
   name                  = "${var.prefix}-appserver-vm"
   location              = azurerm_resource_group.main.location
   resource_group_name   = azurerm_resource_group.main.name
   network_interface_ids = [azurerm_network_interface.main.id]
-  vm_size               = "Standard_DS1_v2"
+  size = "Standard_DS1_v2"
 
-  delete_os_disk_on_termination    = true
-  delete_data_disks_on_termination = true
-
-  storage_image_reference {
+  source_image_reference {
     publisher = "Canonical"
     offer     = "0001-com-ubuntu-server-jammy"
     sku       = "22_04-lts-gen2"
     version   = "latest"
   }
 
-  storage_os_disk {
+  os_disk {
     name              = "app_server_disk"
     caching           = "ReadWrite"
-    create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
+    storage_account_type = "Standard_LRS"
   }
-  os_profile {
-    computer_name  = "appserver"
-    admin_username = var.admin_username
-    admin_password = var.admin_password
-  }
-  os_profile_linux_config {
-    disable_password_authentication = false
+  computer_name  = "appserver"
+  admin_username = "webapp"
+  disable_password_authentication = true
+  
+  admin_ssh_key {
+    username   = "webapp"
+    public_key = tls_private_key.appserver_ssh.public_key_openssh
   }
 }

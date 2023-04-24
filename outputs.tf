@@ -3,9 +3,10 @@ output "public_ip" {
 }
 
 output "username" {
-  value = var.admin_username
+  value = azurerm_linux_virtual_machine.main.admin_username
 }
 
-output "password" {
-  value = var.admin_password
+output "tls_private_key" {
+  value     = tls_private_key.appserver_ssh.private_key_pem
+  sensitive = true
 }
