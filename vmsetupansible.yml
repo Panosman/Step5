@@ -4,8 +4,7 @@
   become: true
   hosts: appserver
   vars:
-    ansible_ssh_user: panman
-    ansible_ssh_pass: Password1234
+    ansible_ssh_user: webapp
 
   
   tasks:
