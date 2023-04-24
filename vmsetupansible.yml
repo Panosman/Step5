@@ -76,13 +76,13 @@
 
     - name: Pull Webapp Docker image
       community.docker.docker_image:
-        name: "panosman/codehub_project:latest"
+        name: "panosman/webapp:latest"
         source: pull
 
     - name: Start WebApp container
       ansible.builtin.docker_container:
         name: "webappcontainer"
-        image: "panosman/codehub_project:latest"        
+        image: "panosman/webapp:latest"        
         state: started
         ports: "8080:8080"
         env:
