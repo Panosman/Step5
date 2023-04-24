@@ -5,6 +5,7 @@
   hosts: appserver
   vars:
     ansible_ssh_user: webapp
+    ansible_ssh_pass: Password1234
 
   
   tasks:
